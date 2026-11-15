@@ -2,12 +2,13 @@
  * Demo data for development and screenshots. All people and phone numbers are fictional.
  * Never run this against a real database: it wipes existing records.
  */
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { addDays, isWorkingDay, todayInDhaka } from "../src/lib/rules";
 import { caseNumber } from "../src/lib/codes";
 
-const db = new PrismaClient();
+import { createPrisma } from "../src/lib/db-client";
+
+const db = createPrisma();
 
 /** Next working day on or after `from`, so seeded appointments are always schedulable. */
 function workingDay(from: string, offset = 0): string {

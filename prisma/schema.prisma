@@ -1,9 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
-// SQLite keeps local setup to zero. To run on PostgreSQL change the provider
-// to "postgresql" and point DATABASE_URL at your server (see docs/DEPLOYMENT.md).
+// SQLite-compatible everywhere: a local file in development, Turso (libSQL) on serverless hosts.
+// At runtime the client always talks to the database through the libSQL adapter (src/lib/db-client.ts);
+// `prisma generate` and `prisma migrate dev` use this URL directly (a local file).
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")

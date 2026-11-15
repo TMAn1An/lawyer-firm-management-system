@@ -23,6 +23,9 @@ COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=build /app/node_modules/bcryptjs ./node_modules/bcryptjs
 COPY --from=build /app/node_modules/tsx ./node_modules/tsx
+COPY --from=build /app/node_modules/@libsql ./node_modules/@libsql
+COPY --from=build /app/node_modules/libsql ./node_modules/libsql
+COPY --from=build /app/node_modules/.bin/tsx ./node_modules/.bin/tsx
 COPY --from=build /app/scripts ./scripts
 COPY --from=build /app/src/lib ./src/lib
 COPY docker-entrypoint.sh /docker-entrypoint.sh

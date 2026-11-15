@@ -18,7 +18,7 @@ Thank you for helping people understand their rights.
 ## Development
 
 ```bash
-npm install && cp .env.example .env && npm run db:push && npm run db:seed && npm run dev
+npm install && cp .env.example .env && npm run db:migrate && npm run db:seed && npm run dev
 npm run typecheck && npm test
 ```
 

@@ -10,6 +10,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
+  serverExternalPackages: ["@libsql/client", "@prisma/adapter-libsql", "libsql"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
