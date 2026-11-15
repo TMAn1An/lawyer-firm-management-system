@@ -12,3 +12,5 @@ data/
 .DS_Store
 *.tsbuildinfo
 next-env.d.ts
+*.db
+*.db-journal

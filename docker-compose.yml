@@ -1,29 +1,13 @@
 services:
-  db:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: nyaypath
-      POSTGRES_PASSWORD: nyaypath
-      POSTGRES_DB: nyaypath
-    ports: ["5432:5432"]
-    volumes: [nyaypath-pg:/var/lib/postgresql/data]
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U nyaypath"]
-      interval: 5s
-      retries: 10
-
-  # `docker compose up -d db` is enough for local development. The app service is for self-hosting.
   app:
     build: .
-    profiles: ["app"]
-    depends_on:
-      db: { condition: service_healthy }
     ports: ["3000:3000"]
     environment:
-      DATABASE_URL: "postgresql://nyaypath:nyaypath@db:5432/nyaypath"
+      DATABASE_URL: "file:/data/nyaypath.db"
       SESSION_SECRET: "${SESSION_SECRET:?Set SESSION_SECRET in your environment or a .env file}"
       SITE_URL: "${SITE_URL:-http://localhost:3000}"
+    volumes:
+      - nyaypath-data:/data
     restart: unless-stopped
-
 volumes:
-  nyaypath-pg:
+  nyaypath-data:

@@ -5,10 +5,11 @@
  * With --bootstrap (used during the Vercel build) it does nothing unless the database has no
  * users yet and the ADMIN_* variables are set, so it is safe to run on every deploy.
  */
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-const db = new PrismaClient();
+import { createPrisma } from "../src/lib/db-client";
+
+const db = createPrisma();
 
 async function main() {
   const bootstrap = process.argv.includes("--bootstrap");
