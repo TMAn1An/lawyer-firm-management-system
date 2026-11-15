@@ -14,7 +14,7 @@ FROM node:22-bookworm-slim AS run
 WORKDIR /app
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
 RUN apt-get update -y && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/* \
- && groupadd -r app && useradd -r -g app app && mkdir -p /data && chown app:app /data
+ && groupadd -r app && useradd -r -g app app
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/prisma ./prisma
@@ -28,7 +28,6 @@ COPY --from=build /app/src/lib ./src/lib
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 USER app
-VOLUME /data
 EXPOSE 3000
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["node", "server.js"]

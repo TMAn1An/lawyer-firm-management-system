@@ -10,7 +10,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
   const { t, lang } = await getT();
   const q = (await searchParams).q?.trim() ?? "";
   const rows = await db.client.findMany({
-    where: q ? { OR: [{ name: { contains: q } }, { phone: { contains: q } }] } : undefined,
+    where: q ? { OR: [{ name: { contains: q, mode: "insensitive" } }, { phone: { contains: q } }] } : undefined,
     include: { _count: { select: { requests: true, cases: true } } },
     orderBy: { createdAt: "desc" },
     take: 100,

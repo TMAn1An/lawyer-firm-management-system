@@ -30,19 +30,20 @@ Advertising by lawyers is not permitted in Bangladesh, so NyayPath is designed s
 
 ## Tech stack
 
-Next.js 15 (App Router, server actions) · TypeScript · Tailwind CSS 4 · Prisma · SQLite (PostgreSQL supported) · Zod · Vitest · Docker
+Next.js 15 (App Router, server actions) · TypeScript · Tailwind CSS 4 · Prisma · PostgreSQL · Zod · Vitest · Docker
 
 ## Quick start
 
-Requires Node.js 20.9+.
+Requires Node.js 20.9+ and a PostgreSQL database (Docker is the easiest way to get one locally).
 
 ```bash
 git clone https://github.com/TMAn1An/lawyer-firm-management-system.git nyaypath
 cd nyaypath
 npm install
 cp .env.example .env
-npm run db:push
-npm run db:seed      # fictional demo data (development only)
+docker compose up -d db      # local PostgreSQL (or point DATABASE_URL at any Postgres)
+npx prisma migrate deploy
+npm run db:seed              # fictional demo data (development only)
 npm run dev          # http://localhost:3000
 ```
 
@@ -56,12 +57,13 @@ Demo staff sign-in: `admin@example.org` / `demo-password-123`. Demo tracking: co
 | `npm run build` / `npm start` | Production build / server |
 | `npm test` | Unit tests (scheduling rules, validation, codes) |
 | `npm run typecheck` | TypeScript check |
+| `npm run db:migrate` | Create a new migration after changing `schema.prisma` |
 | `npm run db:reset` | Wipe and re-seed the dev database |
 | `npm run admin:create` | Create the first administrator on a real database |
 
 ## Deploying
 
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md): Docker, environment variables, PostgreSQL, backups, and reverse-proxy notes.
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md): Vercel + Neon, Docker, environment variables, backups, and reverse-proxy notes.
 
 ## Content and legal review
 

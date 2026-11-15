@@ -2,10 +2,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// SQLite keeps local setup to zero. To run on PostgreSQL change the provider
-// to "postgresql" and point DATABASE_URL at your server (see docs/DEPLOYMENT.md).
+// PostgreSQL everywhere (local, Docker, Vercel + Neon): serverless hosts have no persistent disk.
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

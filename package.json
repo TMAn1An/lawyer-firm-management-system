@@ -15,9 +15,11 @@
     "test": "vitest run",
     "db:push": "prisma db push",
     "db:seed": "tsx --env-file-if-exists=.env prisma/seed.ts",
-    "db:reset": "prisma db push --force-reset && tsx --env-file-if-exists=.env prisma/seed.ts",
+    "db:reset": "prisma migrate reset --force --skip-seed && tsx --env-file-if-exists=.env prisma/seed.ts",
     "postinstall": "prisma generate",
-    "admin:create": "tsx --env-file-if-exists=.env scripts/create-admin.ts"
+    "admin:create": "tsx --env-file-if-exists=.env scripts/create-admin.ts",
+    "vercel-build": "prisma generate && DATABASE_URL=\"${DATABASE_URL_UNPOOLED:-$DATABASE_URL}\" prisma migrate deploy && DATABASE_URL=\"${DATABASE_URL_UNPOOLED:-$DATABASE_URL}\" tsx scripts/create-admin.ts --bootstrap && next build",
+    "db:migrate": "prisma migrate dev"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -1,50 +1,57 @@
 # Deployment
 
+NyayPath needs a PostgreSQL database. Serverless hosts such as Vercel have no persistent disk, so SQLite is not an option there.
+
 ## Environment variables
 
 | Variable | Required | Notes |
 | --- | --- | --- |
-| `DATABASE_URL` | yes | `file:./dev.db` for SQLite, or a PostgreSQL URL |
+| `DATABASE_URL` | yes | PostgreSQL connection string |
+| `DATABASE_URL_UNPOOLED` | no | Direct (non-pooled) URL used for migrations when your provider gives you one (Neon does) |
 | `SESSION_SECRET` | yes (production) | 32+ random characters: `openssl rand -base64 48`. The app refuses to sign people in with the placeholder value |
 | `SITE_URL` | recommended | Public URL, used for page metadata |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME` | first deploy | Creates the first administrator during the build, only if the database has no users |
 | `MAX_APPOINTMENTS_PER_VOLUNTEER_PER_DAY` | no | Default and maximum 8 (the number of daily slots) |
 
-## Docker
+## Vercel + Neon
+
+1. Import the repository in Vercel (framework: Next.js; no settings to change: `vercel-build` runs migrations).
+2. In the project's **Storage** tab, add **Neon** (Postgres). This injects `DATABASE_URL` and `DATABASE_URL_UNPOOLED`.
+3. Add `SESSION_SECRET`, `SITE_URL` and, for the first deploy, `ADMIN_EMAIL` / `ADMIN_PASSWORD` (mark the password as Sensitive).
+4. Deploy. Each build applies pending migrations, then creates the first admin if no users exist.
+5. After signing in, you may delete `ADMIN_PASSWORD` from the project settings.
+
+Never run `npm run db:seed` against a real database: it wipes data and refuses to run when `NODE_ENV=production`.
+
+## Docker (self-hosting)
 
 ```bash
 export SESSION_SECRET="$(openssl rand -base64 48)"
-docker compose up -d --build
-docker compose exec app node node_modules/tsx/dist/cli.mjs scripts/create-admin.ts   # needs ADMIN_EMAIL, ADMIN_PASSWORD
+docker compose --profile app up -d --build
 ```
 
-Set `ADMIN_EMAIL`, `ADMIN_NAME` and `ADMIN_PASSWORD` (12+ characters) in the environment of that command. Data lives in the `nyaypath-data` volume: **back it up** (copy `/data/nyaypath.db` while the app is idle, or use `sqlite3 .backup`).
+Migrations are applied on container start. Create the first administrator with `ADMIN_EMAIL`, `ADMIN_NAME` and `ADMIN_PASSWORD` set, running `scripts/create-admin.ts` through `tsx` inside the container. **Back up** the `nyaypath-pg` volume (`pg_dump`).
 
-> The Docker files have not been exercised in CI yet. Please report problems.
+> The Docker image has not been exercised in CI yet. Please report problems.
 
 ## Without Docker
 
 ```bash
 npm ci && npm run build
-DATABASE_URL=... SESSION_SECRET=... npx prisma db push
+DATABASE_URL=... npx prisma migrate deploy
 ADMIN_EMAIL=... ADMIN_PASSWORD=... npm run admin:create
-node .next/standalone/server.js   # copy .next/static and public next to it, as in the Dockerfile
+node .next/standalone/server.js   # copy .next/static next to it, as in the Dockerfile
 ```
-
-Never run `npm run db:seed` on a real database; it wipes data and refuses to run when `NODE_ENV=production`.
-
-## PostgreSQL
-
-In `prisma/schema.prisma` change `provider = "sqlite"` to `"postgresql"`, set `DATABASE_URL`, then run `npx prisma db push` (or create migrations with `prisma migrate dev` for a team workflow). The code has no SQLite-specific queries. Note that name/phone search uses case-sensitive `contains` on SQLite; on PostgreSQL add `mode: "insensitive"` in `src/app/admin/(app)/clients/page.tsx`.
 
 ## Reverse proxy and rate limiting
 
 - Serve over HTTPS (session cookies are `Secure` in production).
-- Login and tracking attempts are rate limited **in memory, per process**. With several instances, move this to Redis. The client address comes from `X-Forwarded-For`; make your proxy **overwrite** that header rather than append to it, or it can be spoofed.
+- Login and tracking attempts are rate limited **in memory, per process**. On serverless hosts and multi-instance setups each instance has its own counters, so the limit is weaker than it looks; move it to Redis/Upstash for a stricter guarantee. The client address comes from `X-Forwarded-For`; on your own proxy make sure it **overwrites** that header rather than appends to it.
 
 ## Before you go live
 
-- [ ] Strong `SESSION_SECRET`, HTTPS, backups
-- [ ] Remove demo users; create real administrators
+- [ ] Strong `SESSION_SECRET`, HTTPS, database backups
+- [ ] No demo users; real administrators only
 - [ ] Have a lawyer review each guide, then set `reviewedBy`
 - [ ] Phone/visit each directory entry, then set `verified: true`; add local services for your districts
 - [ ] Set a data-retention policy and tell users (see the Privacy page text)
