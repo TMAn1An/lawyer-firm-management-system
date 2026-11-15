@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    ports: ["3000:3000"]
+    environment:
+      DATABASE_URL: "file:/data/nyaypath.db"
+      SESSION_SECRET: "${SESSION_SECRET:?Set SESSION_SECRET in your environment or a .env file}"
+      SITE_URL: "${SITE_URL:-http://localhost:3000}"
+    volumes:
+      - nyaypath-data:/data
+    restart: unless-stopped
+volumes:
+  nyaypath-data:

@@ -1,0 +1,128 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource/noto-sans-bengali/400.css";
+@import "@fontsource/noto-sans-bengali/500.css";
+@import "@fontsource/noto-sans-bengali/700.css";
+
+/* Design tokens. Calm, trustworthy, high contrast: deliberately not the usual "gold and navy law firm" look. */
+:root {
+  --bg: #f7f6f2;
+  --surface: #ffffff;
+  --surface-2: #f0efe9;
+  --ink: #17211f;
+  --ink-soft: #4a5a56;
+  --line: #dcdad0;
+  --brand: #0f6b5c;
+  --brand-ink: #ffffff;
+  --brand-soft: #dff1ec;
+  --accent: #b45309;
+  --danger: #b42318;
+  --danger-soft: #fde8e6;
+  --warn-soft: #fdf1d6;
+  --ok: #1a7f4b;
+  --ok-soft: #dcf3e5;
+  --ring: #1d9a86;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1513;
+    --surface: #16201d;
+    --surface-2: #1d2a26;
+    --ink: #e9efec;
+    --ink-soft: #a5b5af;
+    --line: #2a3a35;
+    --brand: #3fbfa6;
+    --brand-ink: #062720;
+    --brand-soft: #163a33;
+    --accent: #f0a04b;
+    --danger: #ff8a7d;
+    --danger-soft: #3b1a17;
+    --warn-soft: #3a2f12;
+    --ok: #55d08c;
+    --ok-soft: #143525;
+    --ring: #3fbfa6;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warn-soft: var(--warn-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --font-sans: "Inter Variable", "Noto Sans Bengali", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Inter Variable", "Noto Sans Bengali", system-ui, sans-serif;
+  line-height: 1.7; /* Bangla needs more leading than Latin */
+}
+html[lang="bn"] body { font-family: "Noto Sans Bengali", "Inter Variable", system-ui, sans-serif; }
+
+:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; border-radius: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+@layer components {
+  .page { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
+  .prose-page { @apply mx-auto w-full max-w-3xl px-4 sm:px-6; }
+  .card { @apply rounded-2xl border border-line bg-surface p-5 sm:p-6; }
+  .h1 { @apply text-3xl font-bold leading-tight tracking-tight sm:text-4xl; }
+  .h2 { @apply text-2xl font-bold leading-snug tracking-tight; }
+  .h3 { @apply text-lg font-semibold; }
+  .muted { @apply text-soft; }
+
+  .btn { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-base font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60; }
+  .btn-primary { @apply bg-brand text-brand-ink hover:opacity-90; }
+  .btn-secondary { @apply border border-line bg-surface text-ink hover:bg-surface-2; }
+  .btn-danger { @apply bg-danger text-white hover:opacity-90; }
+  .btn-sm { @apply min-h-9 rounded-lg px-3 py-1.5 text-sm; }
+
+  .label { @apply mb-1.5 block text-sm font-medium; }
+  .hint { @apply mt-1 text-sm text-soft; }
+  .field-error { @apply mt-1 text-sm font-medium text-danger; }
+  .input { @apply block min-h-11 w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-base text-ink placeholder:text-soft/70; }
+  textarea.input { @apply min-h-32; }
+  .input[aria-invalid="true"] { @apply border-danger; }
+
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold; }
+  .badge-neutral { @apply bg-surface-2 text-ink; }
+  .badge-ok { @apply bg-ok-soft text-ok; }
+  .badge-warn { @apply bg-warn-soft text-accent; }
+  .badge-danger { @apply bg-danger-soft text-danger; }
+  .badge-brand { @apply bg-brand-soft text-brand; }
+
+  .table-wrap { @apply overflow-x-auto rounded-2xl border border-line bg-surface; }
+  .table { @apply w-full min-w-[640px] text-left text-sm; }
+  .table th { @apply bg-surface-2 px-4 py-3 font-semibold text-soft; }
+  .table td { @apply border-t border-line px-4 py-3 align-top; }
+}
+
+/* Printing: appointment slips and receipts */
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  .card { border-color: #999 !important; box-shadow: none !important; }
+}
+.print-only { display: none; }
